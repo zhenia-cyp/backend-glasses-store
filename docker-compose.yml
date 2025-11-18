@@ -1,0 +1,14 @@
+version: '3.9'
+
+services:
+  web:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: fastapi-web
+    ports:
+      - "${PORT}:${PORT}"
+    volumes:
+      - ./api:/app
+    env_file:
+      - ./api/.env
