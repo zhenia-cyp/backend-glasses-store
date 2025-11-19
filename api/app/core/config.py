@@ -1,5 +1,7 @@
-from pydantic_settings import BaseSettings
-import os
+from pathlib import Path
+from pydantic_settings import BaseSettings, SettingsConfigDict
+API_DIR = Path(__file__).resolve().parents[2]
+ENV_FILE = API_DIR / ".env"
 
 class Settings(BaseSettings):
 
@@ -14,8 +16,13 @@ class Settings(BaseSettings):
     POSTGRES_HOST: str
     POSTGRES_PORT: int
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
+    ASYNC_DATABASE_URL: str # postgresql+asyncpg://postgres:postgres@postgres:5432/postgres
+    SYNC_DATABASE_URL: str # postgresql://postgres:postgres@postgres:5432/postgres
+
+    model_config = SettingsConfigDict(
+        env_file=ENV_FILE,
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
 
 settings = Settings()
