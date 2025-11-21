@@ -1,3 +1,5 @@
+from fastapi import APIRouter, Depends, HTTPException, status
+
 from app.models import User
 from app.repositories.users import UserRepository, get_user_repository
 from fastapi import Depends
@@ -10,6 +12,12 @@ class UserService:
         self.user_repo = user_repo
 
     async def create(self, user: UserCreate) -> UserRead:
+        existing_user = await self.get_by_email(user.email)
+        if existing_user:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="User already exists"
+            )
         hashed_password = get_hash_password(user.password)
         user_dict = user.model_dump(exclude={"password"})
         user_dict["hashed_password"] = hashed_password

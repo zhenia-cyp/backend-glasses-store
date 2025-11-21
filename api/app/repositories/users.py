@@ -26,6 +26,7 @@ class UserRepository(BaseRepository):
             await self.session.rollback()
             return None
 
+
     async def get_by_email(self, email: str) -> User | None:
         """
         Returns user by email or None.
