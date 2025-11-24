@@ -19,6 +19,12 @@ class Settings(BaseSettings):
     ASYNC_DATABASE_URL: str # postgresql+asyncpg://postgres:postgres@postgres:5432/postgres
     SYNC_DATABASE_URL: str # postgresql://postgres:postgres@postgres:5432/postgres
 
+    REFRESH_TOKEN_EXPIRE_MINUTES: int
+    ACCESS_TOKEN_EXPIRE_MINUTES: int
+    JWT_SECRET_KEY: str
+    ALGORITHM: str
+    TOKEN_KEY: str
+
     model_config = SettingsConfigDict(
         env_file=ENV_FILE,
         env_file_encoding="utf-8",
