@@ -1,3 +1,5 @@
+from typing import Optional
+
 from app.repositories.base import BaseRepository
 from app.models.users import User
 from sqlalchemy import select
@@ -32,6 +34,12 @@ class UserRepository(BaseRepository):
         Returns user by email or None.
         """
         stmt = select(User).filter_by(email=email)
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
+
+
+    async def get_by_phone(self, phone: str) -> Optional[User]:
+        stmt = select(User).filter_by(phone=phone)
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 

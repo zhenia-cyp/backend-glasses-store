@@ -1,16 +1,17 @@
 from fastapi import APIRouter, Depends, Request, Response, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from app.services.auth import AuthService, get_auth_service
-from app.schemas.users import TokenType
+from app.schemas.enum import TokenType
 from app.services.users import UserService, get_user_service
 from app.utils.exceptions import CredentialsException, TokenExpiredException
 from app.auth.tokens import generate_jwt_token
 from app.models import User
 from app.auth.deps import get_current_user
+from app.schemas.users import AccessTokenResponse
 
 auth_router = APIRouter(prefix="/auth", tags=["auth"])
 
-@auth_router.post("/login")
+@auth_router.post("/login",response_model=AccessTokenResponse)
 async def login(
     response: Response,
     form_data: OAuth2PasswordRequestForm = Depends(),
@@ -35,7 +36,7 @@ async def login(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@auth_router.post("/refresh")
+@auth_router.post("/refresh", response_model=AccessTokenResponse)
 async def refresh_token(request: Request, service: AuthService = Depends(get_auth_service)):
     refresh_token = request.cookies.get("refresh_token")
     if not refresh_token:

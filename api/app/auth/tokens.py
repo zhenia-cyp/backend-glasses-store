@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta
 from app.core.config import settings
-from app.schemas.users import TokenType, TokenPayload
+from app.schemas.users import TokenPayload
 import jwt
 from jwt import decode as jwt_decode, ExpiredSignatureError, InvalidTokenError
 from app.utils.exceptions import CredentialsException, TokenExpiredException
+from app.schemas.enum import TokenType
 
 
 def generate_jwt_token(data: dict, token_type: TokenType) -> str:

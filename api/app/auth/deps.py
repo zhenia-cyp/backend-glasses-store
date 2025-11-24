@@ -1,5 +1,5 @@
 from fastapi import Depends
-from app.schemas.users import TokenType
+from app.schemas.enum import TokenType
 from app.services.auth import AuthService, get_auth_service
 from fastapi.security import OAuth2PasswordBearer
 

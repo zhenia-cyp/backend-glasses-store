@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr, ConfigDict
 from typing import Optional
-from enum import Enum
+
 
 
 class UserCreate(BaseModel):
@@ -34,9 +34,9 @@ class UserLogin(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class TokenType(str, Enum):
-    ACCESS = "access"
-    REFRESH = "refresh"
+class AccessTokenResponse(BaseModel):
+    access_token: str
+    token_type: str
 
 
 class TokenPayload(BaseModel):
