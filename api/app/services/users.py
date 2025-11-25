@@ -18,6 +18,12 @@ class UserService:
                 status_code=status.HTTP_409_CONFLICT,
                 detail="User already exists"
             )
+        existing_phone_user = await self.user_repo.get_by_phone(user.phone)
+        if existing_phone_user:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="User with this phone already exists"
+            )
         hashed_password = get_hash_password(user.password)
         user_dict = user.model_dump(exclude={"password"})
         user_dict["hashed_password"] = hashed_password
