@@ -35,6 +35,15 @@ class AuthService:
         return user
 
 
+    async def create_email_verify_token(self, email: str) -> str:
+        return generate_jwt_token({"sub": email}, TokenType.VERIFY_EMAIL)
+
+
+    async def verify_email_token(self, token: str) -> str:
+        payload = verify_token(token, TokenType.VERIFY_EMAIL)
+        return extract_email_by_token(payload)
+
+
 async def get_auth_service(repo: UserRepository = Depends(get_user_repository)) -> AuthService:
     return AuthService(repo)
 

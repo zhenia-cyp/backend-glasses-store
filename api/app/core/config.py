@@ -29,6 +29,18 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_SECRET: str
     SESSION_SECRET_KEY: str
 
+    EMAIL_VERIFICATION_TOKEN_EXPIRE_MINUTES: int
+    EMAIL_VERIFICATION_URL: str
+
+    SMTP_HOST: str
+    SMTP_PORT: str
+    SMTP_USER: str
+    SMTP_PASSWORD: str
+    SMTP_USE_TLS: bool
+
+    REDIS_PORT: str
+    REDIS_URL: str
+
     model_config = SettingsConfigDict(
         env_file=ENV_FILE,
         env_file_encoding="utf-8",

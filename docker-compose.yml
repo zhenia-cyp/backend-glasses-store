@@ -10,10 +10,14 @@ services:
       - "${PORT}:${PORT}"
     depends_on:
       - db
+      - redis
+      - celery
     volumes:
       - ./api:/app
     env_file:
       - ./api/.env
+    networks:
+      - main_network
 
   db:
     image: postgres:13
@@ -28,12 +32,50 @@ services:
       - postgres_data:/var/lib/postgresql/data
     env_file:
       - ./api/.env
+    networks:
+      - main_network
     healthcheck: # docker inspect postgres-db
       test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 5s
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    networks:
+      - main_network
+    env_file:
+      - ./api/.env
+
+  celery:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    container_name: celery
+    restart: always
+    env_file:
+     - ./api/.env
+    depends_on:
+      - redis
+    volumes:
+      - ./api:/app
+    environment:
+      CELERY_BROKER_URL: ${REDIS_URL}
+      CELERY_RESULT_BACKEND: ${REDIS_URL}
+    command: celery -A app.celery_tasks.tasks worker --loglevel=info
+    networks:
+      - main_network
+
+
+networks:
+  main_network:
+    name: main_network
+    driver: bridge
+
 
 volumes:
     postgres_data:
