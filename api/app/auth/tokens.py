@@ -7,16 +7,34 @@ from app.utils.exceptions import CredentialsException, TokenExpiredException
 from app.schemas.enum import TokenType
 
 
+# def generate_jwt_token(data: dict, token_type: TokenType) -> str:
+#     payload = data.copy()
+#     if token_type == TokenType.ACCESS:
+#         expire_minutes = settings.ACCESS_TOKEN_EXPIRE_MINUTES
+#     else:
+#         expire_minutes = settings.REFRESH_TOKEN_EXPIRE_MINUTES
+#     issued_at = datetime.utcnow()
+#     payload["iat"] = issued_at
+#     payload["exp"] = issued_at + timedelta(minutes=expire_minutes)
+#     payload["type"] = token_type.value
+#     return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.ALGORITHM)
 def generate_jwt_token(data: dict, token_type: TokenType) -> str:
     payload = data.copy()
+
     if token_type == TokenType.ACCESS:
         expire_minutes = settings.ACCESS_TOKEN_EXPIRE_MINUTES
-    else:
+    elif token_type == TokenType.REFRESH:
         expire_minutes = settings.REFRESH_TOKEN_EXPIRE_MINUTES
+    elif token_type == TokenType.VERIFY_EMAIL:
+        expire_minutes = settings.EMAIL_VERIFICATION_TOKEN_EXPIRE_MINUTES
+    else:
+        raise ValueError(f"Unsupported token type: {token_type}")
+
     issued_at = datetime.utcnow()
     payload["iat"] = issued_at
     payload["exp"] = issued_at + timedelta(minutes=expire_minutes)
     payload["type"] = token_type.value
+
     return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.ALGORITHM)
 
 
@@ -52,3 +70,5 @@ def extract_email_by_token(payload: TokenPayload) -> str:
     if not payload.sub:
         raise CredentialsException("Token has no subject")
     return payload.sub
+
+

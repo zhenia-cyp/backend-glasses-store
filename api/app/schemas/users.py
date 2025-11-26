@@ -44,3 +44,10 @@ class TokenPayload(BaseModel):
     exp: float
     iat: float
     type: str
+
+
+
+class VerifyEmailToken(BaseModel):
+    token: str
+
+    model_config = ConfigDict(from_attributes=True)
