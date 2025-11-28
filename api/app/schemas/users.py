@@ -19,10 +19,11 @@ class UserRead(BaseModel):
     firstname: str
     lastname: Optional[str] = None
     email: EmailStr
-    phone: str
+    phone: Optional[str] = None
     role: Optional[str] = None
     is_active: bool
     is_superuser: bool
+    has_real_password: bool
 
     model_config = ConfigDict(from_attributes=True)
 
