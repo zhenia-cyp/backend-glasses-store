@@ -21,9 +21,14 @@ class AuthService:
     async def authenticate(self, password, current_user: User) -> tuple[str, str]:
         if not verify_password(password, current_user.hashed_password):
             raise CredentialsException("Invalid email or password")
-        access_token = generate_jwt_token({"sub": current_user.email}, TokenType.ACCESS)
-        refresh_token = generate_jwt_token({"sub": current_user.email}, TokenType.REFRESH)
-        return access_token, refresh_token
+        return self.generate_tokens(current_user.email)
+
+
+    async def issue_tokens_for_email(self, email: str) -> tuple[str, str]:
+        user = await self.user_repo.get_by_email(email)
+        if not user:
+            raise CredentialsException("User not found")
+        return self.generate_tokens(user.email)
 
 
     async def get_user_by_token(self, token: str, token_type: TokenType) -> User:
@@ -42,6 +47,12 @@ class AuthService:
     async def verify_email_token(self, token: str) -> str:
         payload = verify_token(token, TokenType.VERIFY_EMAIL)
         return extract_email_by_token(payload)
+
+
+    def generate_tokens(self, email: str) -> tuple[str, str]:
+        access_token = generate_jwt_token({"sub": email}, TokenType.ACCESS)
+        refresh_token = generate_jwt_token({"sub": email}, TokenType.REFRESH)
+        return access_token, refresh_token
 
 
 async def get_auth_service(repo: UserRepository = Depends(get_user_repository)) -> AuthService:
